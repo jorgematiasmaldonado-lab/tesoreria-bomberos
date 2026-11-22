@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tesorería · BV Villa Río Icho Cruz</title>
+  <meta name="description" content="Sistema de Tesorería y Gestión de la Asociación de Bomberos Voluntarios de Villa Río Icho Cruz">
+  <meta name="author" content="Maldonado Jorge Matias · JMM Gestiones & Tecnología">
+  <meta name="theme-color" content="#D32F2F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="BV Icho Cruz">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- Tailwind CSS por CDN (sin compilación) -->
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bombero: { DEFAULT: '#D32F2F', oscuro: '#B71C1C', claro: '#FFEBEE', medio: '#EF9A9A' }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+
+  <!-- Aviso de falta de conexión -->
+  <div id="aviso-offline" class="hidden no-print fixed top-0 inset-x-0 z-[70] bg-gray-900 text-white text-center text-sm py-2 px-4">
+    ⚠️ Sin conexión a internet. Los cambios no se pueden guardar hasta que vuelva la conexión.
+  </div>
+
+  <!-- Pantalla de carga inicial -->
+  <div id="pantalla-carga" class="no-print flex-1 flex flex-col items-center justify-center gap-4 p-6">
+    <img src="logo.png" alt="Logo" class="w-24 h-24 object-contain" onerror="this.style.display='none'">
+    <div class="spinner"></div>
+    <p class="text-gray-500">Cargando…</p>
+  </div>
+
+  <!-- Falta configurar Supabase -->
+  <section id="pantalla-sin-config" class="hidden no-print flex-1 flex items-center justify-center p-6">
+    <div class="bg-white rounded-2xl shadow p-6 max-w-md text-center">
+      <img src="logo.png" alt="Logo" class="w-20 h-20 mx-auto object-contain mb-3" onerror="this.style.display='none'">
+      <h1 class="text-xl font-bold text-bombero mb-2">Falta la configuración</h1>
+      <p class="text-gray-600">Completá la URL y la <i>anon key</i> de Supabase en el archivo <code>config.js</code>.
+        Los pasos están en <b>GUIA.md</b>.</p>
+    </div>
+  </section>
+
+  <!-- Pantalla de ingreso -->
+  <section id="pantalla-login" class="hidden no-print flex-1 flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div class="bg-bombero text-white text-center px-6 py-6">
+        <img src="logo.png" alt="Logo del cuartel" class="w-24 h-24 mx-auto object-contain bg-white rounded-full p-1 mb-3" onerror="this.style.display='none'">
+        <h1 class="text-lg font-bold leading-tight">Bomberos Voluntarios<br>Villa Río Icho Cruz</h1>
+        <p class="text-sm opacity-90 mt-1">Tesorería y Gestión</p>
+      </div>
+      <form id="form-login" class="p-6 space-y-4" novalidate>
+        <div>
+          <label class="etiqueta" for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" autocomplete="username" class="campo" required>
+        </div>
+        <div>
+          <label class="etiqueta" for="login-pass">Contraseña</label>
+          <input id="login-pass" name="password" type="password" autocomplete="current-password" class="campo" required>
+        </div>
+        <button type="submit" class="btn btn-primario w-full text-lg">Ingresar</button>
+        <button type="button" id="btn-olvide" class="w-full text-sm text-bombero underline">¿Olvidaste tu contraseña?</button>
+      </form>
+      <div class="border-t px-6 py-3 flex items-center justify-center gap-2 text-[11px] text-gray-500">
+        <img src="jmm-logo.png" alt="JMM Gestiones &amp; Tecnología" class="h-7 w-auto rounded" onerror="this.style.display='none'">
+        <span>Desarrollado por JMM Gestiones &amp; Tecnología</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Aplicación -->
+  <div id="app" class="hidden flex-1 flex flex-col">
+    <header class="no-print bg-bombero text-white shadow sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-3 py-2 flex items-center gap-3">
+        <img src="logo.png" alt="Logo" class="w-11 h-11 object-contain bg-white rounded-full p-0.5 shrink-0" onerror="this.style.display='none'">
+        <div class="min-w-0 flex-1">
+          <div class="font-bold leading-tight truncate">BV Villa Río Icho Cruz</div>
+          <div class="text-xs opacity-90 truncate"><span id="usuario-nombre"></span> · <span id="usuario-rol"></span></div>
+        </div>
+        <button id="btn-cuenta" class="btn-header" title="Mi cuenta">🔑<span class="hidden sm:inline"> Contraseña</span></button>
+        <button id="btn-salir" class="btn-header font-semibold">Salir</button>
+      </div>
+      <nav id="menu" class="bg-bombero-oscuro overflow-x-auto whitespace-nowrap scroll-suave"></nav>
+    </header>
+    <main id="vista" class="flex-1 w-full max-w-7xl mx-auto p-3 sm:p-4"></main>
+  </div>
+
+  <footer class="no-print text-center text-xs text-gray-500 px-4 py-4 border-t bg-white flex flex-col sm:flex-row items-center justify-center gap-2">
+    <img src="jmm-logo.png" alt="JMM Gestiones &amp; Tecnología" class="h-8 w-auto rounded" onerror="this.style.display='none'">
+    <span>Desarrollado por Maldonado Jorge Matias · JMM Gestiones &amp; Tecnología — Licencia de uso otorgada a BV Villa Río Icho Cruz</span>
+  </footer>
+
+  <div id="modales" class="no-print"></div>
+  <div id="toasts" class="no-print fixed bottom-4 inset-x-0 z-[80] flex flex-col items-center gap-2 px-4 pointer-events-none"></div>
+  <div id="area-impresion"></div>
+
+  <!-- Librerías y aplicación -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/adjuntos.js"></script>
+  <script src="app.js"></script>
+  <script src="js/resumen.js"></script>
+  <script src="js/movimientos.js"></script>
+  <script src="js/gastos.js"></script>
+  <script src="js/subsidios.js"></script>
+  <script src="js/extintores.js"></script>
+  <script src="js/socios.js"></script>
+  <script src="js/presupuesto.js"></script>
+  <script src="js/informes.js"></script>
+  <script src="js/encargado.js"></script>
+  <script src="js/notas.js"></script>
+  <script src="js/configuracion.js"></script>
+</body>
+</html>

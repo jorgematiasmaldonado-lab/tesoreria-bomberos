@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Generar íconos · BV Villa Río Icho Cruz</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 760px; margin: 0 auto; padding: 16px; color: #222; background: #fafafa; }
+    h1 { color: #D32F2F; }
+    .iconos { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+    .icono { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 12px; text-align: center; }
+    canvas { width: 96px; height: 96px; border: 1px dashed #ccc; border-radius: 8px; }
+    a { display: inline-block; margin-top: 6px; background: #D32F2F; color: #fff; padding: 6px 10px; border-radius: 8px; text-decoration: none; font-size: 14px; }
+    code { background: #eee; padding: 1px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Generar íconos de la app desde el logo</h1>
+  <p>1. Elegí el archivo del logo del cuartel (PNG, idealmente cuadrado y de 512 px o más).<br>
+     2. Descargá cada ícono y guardalo en la carpeta <code>icons/</code> del proyecto con el nombre indicado
+     (reemplazando los existentes). El logo también tiene que estar en la raíz como <code>logo.png</code>.</p>
+  <input type="file" id="archivo" accept="image/png,image/jpeg">
+  <div class="iconos" id="iconos"></div>
+  <p style="font-size:12px;color:#777;margin-top:24px">Desarrollado por Maldonado Jorge Matias · JMM Gestiones &amp; Tecnología — Licencia de uso otorgada a BV Villa Río Icho Cruz</p>
+  <script>
+    // Lista de íconos que usa la app (manifest.json e index.html)
+    const ICONOS = [
+      { nombre: 'icon-192.png', tam: 192, margen: 0, fondo: null },
+      { nombre: 'icon-512.png', tam: 512, margen: 0, fondo: null },
+      { nombre: 'icon-maskable-512.png', tam: 512, margen: 0.1, fondo: '#D32F2F' },
+      { nombre: 'apple-touch-icon.png', tam: 180, margen: 0.04, fondo: '#FFFFFF' },
+      { nombre: 'favicon-32.png', tam: 32, margen: 0, fondo: null }
+    ];
+    document.getElementById('archivo').addEventListener('change', (ev) => {
+      const f = ev.target.files[0];
+      if (!f) return;
+      const img = new Image();
+      img.onload = () => {
+        const cont = document.getElementById('iconos');
+        cont.innerHTML = '';
+        for (const ic of ICONOS) {
+          const c = document.createElement('canvas');
+          c.width = c.height = ic.tam;
+          const ctx = c.getContext('2d');
+          if (ic.fondo) { ctx.fillStyle = ic.fondo; ctx.fillRect(0, 0, ic.tam, ic.tam); }
+          const util = ic.tam * (1 - 2 * ic.margen);
+          const esc = Math.min(util / img.width, util / img.height);
+          const w = img.width * esc, h = img.height * esc;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, (ic.tam - w) / 2, (ic.tam - h) / 2, w, h);
+          const div = document.createElement('div');
+          div.className = 'icono';
+          const a = document.createElement('a');
+          a.textContent = '⬇ ' + ic.nombre;
+          a.download = ic.nombre;
+          a.href = c.toDataURL('image/png');
+          div.append(c, document.createElement('br'), a);
+          cont.appendChild(div);
+        }
+      };
+      img.src = URL.createObjectURL(f);
+    });
+  </script>
+</body>
+</html>

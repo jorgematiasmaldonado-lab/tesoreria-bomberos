@@ -1,0 +1,17 @@
+{
+  "name": "Tesorería · Bomberos Voluntarios Villa Río Icho Cruz",
+  "short_name": "BV Icho Cruz",
+  "description": "Sistema de Tesorería y Gestión de la Asociación de Bomberos Voluntarios de Villa Río Icho Cruz. Desarrollado por Maldonado Jorge Matias · JMM Gestiones & Tecnología.",
+  "lang": "es-AR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#D32F2F",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
