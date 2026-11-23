@@ -82,7 +82,45 @@ function parseMonto(txt) {
   return Number.isFinite(n) ? Math.round(n * 100) / 100 : NaN;
 }
 /** Para mostrar un monto dentro de un input editable: 88360.2 → "88360,20" */
-function montoInput(n) { return n === null || n === undefined || n === '' ? '' : numExcel(n); }
+function montoInput(n) { return n === null || n === undefined || n === '' ? '' : _fmtNum.format(Number(n) || 0); }
+
+/**
+ * Ayuda para cargar montos: mientras se escribe en cualquier campo de importe
+ * (input con inputmode="decimal") se muestra debajo cómo queda en pesos
+ * ("$ 9.000.000,00"), y al salir del campo se le agregan los puntos de miles.
+ */
+function activarAyudaMontos() {
+  const esMonto = (el) => el?.matches?.('input[inputmode="decimal"]');
+  const ayudaDe = (inp, crear) => {
+    let a = inp.nextElementSibling;
+    if (a?.classList.contains('ayuda-monto')) return a;
+    if (!crear) return null;
+    a = document.createElement('div');
+    a.className = 'ayuda-monto';
+    a.setAttribute('aria-live', 'polite');
+    inp.after(a);
+    return a;
+  };
+  document.addEventListener('input', (ev) => {
+    const inp = ev.target;
+    if (!esMonto(inp)) return;
+    const txt = inp.value.trim();
+    if (!txt) { ayudaDe(inp, false)?.remove(); return; }
+    const n = parseMonto(txt);
+    const a = ayudaDe(inp, true);
+    a.classList.toggle('mal', !Number.isFinite(n));
+    a.textContent = Number.isFinite(n) ? pesos(n) : 'Monto inválido';
+  });
+  document.addEventListener('focusout', (ev) => {
+    const inp = ev.target;
+    if (!esMonto(inp)) return;
+    const n = parseMonto(inp.value);
+    if (inp.value.trim() && Number.isFinite(n)) {
+      inp.value = _fmtNum.format(n);
+      ayudaDe(inp, false)?.remove();
+    }
+  });
+}
 
 // ---------------------------------------------------------------------
 // Seguridad: escapar todo texto ingresado por usuarios antes de insertarlo en HTML

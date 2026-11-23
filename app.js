@@ -61,6 +61,8 @@ function mostrarPantalla(id) {
 
 async function iniciar() {
   conectarTema();
+  conectarInstalar();
+  activarAyudaMontos();
   registrarServiceWorker();
   vigilarConexion();
 
@@ -119,6 +121,96 @@ function conectarLogin() {
 }
 
 function urlApp() { return location.origin + location.pathname; }
+
+// ---------------------------------------------------------------------
+// Instalar la app (PWA): botón directo cuando el navegador lo permite
+// (Chrome/Edge en Android y PC) e instrucciones para cada dispositivo
+// ---------------------------------------------------------------------
+let eventoInstalar = null;
+window.addEventListener('beforeinstallprompt', (ev) => { ev.preventDefault(); eventoInstalar = ev; });
+window.addEventListener('appinstalled', () => {
+  eventoInstalar = null;
+  document.querySelectorAll('[data-instalar]').forEach((b) => b.classList.add('hidden'));
+  toast('¡App instalada! Ya la podés abrir desde el ícono del cuartel.');
+});
+function appYaInstalada() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function plataformaActual() {
+  const ua = navigator.userAgent;
+  if (/iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'iphone';
+  if (/android/i.test(ua)) return 'android';
+  return 'pc';
+}
+const PASOS_INSTALAR = {
+  android: {
+    titulo: '🤖 Android',
+    pasos: [
+      'Abrí este enlace en <b>Google Chrome</b>.',
+      'Tocá el menú <span class="tecla">⋮</span> (arriba a la derecha).',
+      'Elegí <b>Instalar aplicación</b> o <b>Agregar a la pantalla principal</b>.',
+      'Confirmá con <b>Instalar</b>. El ícono del cuartel aparece junto a tus otras apps.'
+    ]
+  },
+  iphone: {
+    titulo: '🍎 iPhone / iPad',
+    pasos: [
+      'Abrí este enlace en <b>Safari</b>.',
+      'Tocá el botón <b>Compartir</b> <span class="tecla">⬆︎</span> (el cuadrado con la flecha, abajo en el centro).',
+      'Deslizá hacia abajo y elegí <b>Agregar a inicio</b>.',
+      'Tocá <b>Agregar</b> (arriba a la derecha). El ícono del cuartel queda en la pantalla de inicio.'
+    ]
+  },
+  pc: {
+    titulo: '💻 PC (Windows / Mac)',
+    pasos: [
+      'Abrí este enlace en <b>Google Chrome</b> o <b>Microsoft Edge</b>.',
+      'En la barra de direcciones, a la derecha, tocá el ícono de instalar <span class="tecla">⊕</span> (un monitor con una flecha).',
+      'Si no aparece: en Chrome, menú <span class="tecla">⋮</span> → <b>Transmitir, guardar y compartir</b> → <b>Instalar página como app</b>. En Edge, menú <span class="tecla">…</span> → <b>Aplicaciones</b> → <b>Instalar este sitio como una aplicación</b>.',
+      'Confirmá con <b>Instalar</b>. Queda un acceso en el escritorio y en el menú Inicio.'
+    ]
+  }
+};
+function modalInstalar() {
+  let actual = plataformaActual();
+  const m = abrirModal({
+    titulo: 'Instalar la app',
+    cuerpo: '',
+    pie: `<button class="btn btn-secundario" data-copiar-enlace>🔗 Copiar enlace</button><button class="btn btn-primario" data-cerrar>Listo</button>`
+  });
+  const pintar = () => {
+    const p = PASOS_INSTALAR[actual];
+    m.cuerpo.innerHTML = `
+      <div class="flex items-center gap-3 mb-3">
+        <img src="icons/icon-192.png" alt="" class="w-14 h-14 rounded-xl">
+        <p class="text-sm text-gray-600">Instalá el sistema como una app: se abre desde su propio ícono, a pantalla completa y más rápido.</p>
+      </div>
+      ${eventoInstalar ? `<button class="btn btn-primario w-full text-lg mb-4" data-instalar-ya>📲 Instalar ahora</button>
+        <p class="text-xs text-gray-500 -mt-2 mb-3 text-center">o seguí los pasos a mano:</p>` : ''}
+      <div class="flex gap-2 overflow-x-auto scroll-suave mb-2">${Object.entries(PASOS_INSTALAR).map(([id, x]) =>
+        `<button class="subpestana ${id === actual ? 'activa' : ''}" data-plataforma="${id}">${x.titulo}</button>`).join('')}</div>
+      <ol class="pasos">${p.pasos.map((t) => `<li><span>${t}</span></li>`).join('')}</ol>
+      ${actual === 'iphone' ? '<p class="text-xs text-gray-500 mt-2">En iPhone la instalación solo se hace desde el botón Compartir; no hay un botón automático.</p>' : ''}`;
+  };
+  m.cuerpo.addEventListener('click', async (ev) => {
+    const b = ev.target.closest('[data-plataforma]');
+    if (b) { actual = b.dataset.plataforma; pintar(); return; }
+    if (ev.target.closest('[data-instalar-ya]') && eventoInstalar) {
+      eventoInstalar.prompt();
+      const { outcome } = await eventoInstalar.userChoice;
+      eventoInstalar = null;
+      if (outcome === 'accepted') m.cerrar(); else pintar();
+    }
+  });
+  m.el.querySelector('[data-copiar-enlace]').addEventListener('click', () => copiarTexto(urlApp()));
+  pintar();
+}
+function conectarInstalar() {
+  document.querySelectorAll('[data-instalar]').forEach((b) => {
+    if (appYaInstalada()) b.classList.add('hidden');
+    else b.addEventListener('click', modalInstalar);
+  });
+}
 
 // ---------------------------------------------------------------------
 // Modo oscuro: la preferencia se guarda en este dispositivo
