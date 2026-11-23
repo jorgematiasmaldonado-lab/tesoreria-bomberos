@@ -384,8 +384,9 @@ const Auditoria = {
     let c = App.sb.from('auditoria').select('*').order('id', { ascending: false }).limit(st.limite);
     if (st.tabla) c = c.eq('tabla', st.tabla);
     if (st.operacion) c = c.eq('operacion', st.operacion);
-    if (esFechaValida(st.desde)) c = c.gte('fecha', st.desde + 'T00:00:00');
-    if (esFechaValida(st.hasta)) c = c.lte('fecha', st.hasta + 'T23:59:59.999');
+    // Límites en hora local (Argentina) convertidos a UTC para comparar con el timestamp
+    if (esFechaValida(st.desde)) c = c.gte('fecha', new Date(st.desde + 'T00:00:00').toISOString());
+    if (esFechaValida(st.hasta)) c = c.lt('fecha', new Date(sumarDias(st.hasta, 1) + 'T00:00:00').toISOString());
     const filas = await q(c);
     const ignorar = new Set(['modificado_por', 'modificado_en', 'creado_por', 'creado_en']);
     const diferencias = (a) => {

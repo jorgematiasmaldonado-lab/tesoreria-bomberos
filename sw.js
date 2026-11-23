@@ -3,7 +3,7 @@
    Los datos SIEMPRE se leen en línea desde Supabase (nunca se guardan acá).
    Al publicar una versión nueva, cambiar el número de VERSION.
    ===================================================================== */
-const VERSION = 'bv-v1.0.1';
+const VERSION = 'bv-v1.0.2';
 const ARCHIVOS = [
   './', './index.html', './styles.css', './config.js', './app.js', './manifest.json', './logo.png', './jmm-logo.png',
   './icons/icon-192.png', './icons/icon-512.png',
