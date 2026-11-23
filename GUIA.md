@@ -62,12 +62,17 @@ El script crea las tablas, los índices, las políticas de seguridad (RLS), los 
 2. Volver a **SQL Editor → New query**, pegar esto (cambiando el email y el nombre) y tocar **Run**:
 
 ```sql
-update public.perfiles
-   set rol = 'tesoreria', activo = true, nombre = 'Nombre del Tesorero'
- where email = 'tesoreria@ejemplo.com';
+insert into public.perfiles (id, email, nombre, rol, activo)
+select id, email, 'Nombre del Tesorero', 'tesoreria', true
+  from auth.users
+ where lower(email) = lower('tesoreria@ejemplo.com')
+on conflict (id) do update
+   set rol = 'tesoreria', activo = true, nombre = excluded.nombre;
+
+select email, nombre, rol, activo from public.perfiles;
 ```
 
-Tiene que decir *1 row affected*. Los demás usuarios se crean después desde la app: **Configuración → Usuarios**.
+En el resultado tiene que aparecer el email con rol `tesoreria` y activo `true`. (Supabase guarda los emails en minúsculas; esta consulta funciona aunque lo escribas con mayúsculas, e incluso si el usuario se creó antes de ejecutar `supabase.sql`.) Los demás usuarios se crean después desde la app: **Configuración → Usuarios**.
 
 ## Paso 5 · Completar `config.js`
 

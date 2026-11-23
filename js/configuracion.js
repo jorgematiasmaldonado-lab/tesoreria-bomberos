@@ -242,6 +242,7 @@ Vistas.configuracion = {
       const d = leerForm(form);
       if (!d.nombre) return errorCampo(form, 'nombre', 'El nombre es obligatorio.');
       if (!/^\S+@\S+\.\S+$/.test(d.email)) return errorCampo(form, 'email', 'El email no es válido.');
+      d.email = d.email.toLowerCase();
       if (d.password.length < 6) return errorCampo(form, 'password', 'La contraseña debe tener al menos 6 caracteres.');
       try {
         // Cliente secundario SIN sesión persistente: así no se cierra la sesión de Tesorería

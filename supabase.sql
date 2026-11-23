@@ -1207,6 +1207,8 @@ end $$;
 -- Authentication → Users): activar el primer usuario de Tesorería.
 -- Reemplazá el email y ejecutá solo estas líneas:
 --
---   update public.perfiles set rol = 'tesoreria', activo = true, nombre = 'Tu nombre'
---    where email = 'tesoreria@ejemplo.com';
+--   insert into public.perfiles (id, email, nombre, rol, activo)
+--   select id, email, 'Tu nombre', 'tesoreria', true from auth.users
+--    where lower(email) = lower('tesoreria@ejemplo.com')
+--   on conflict (id) do update set rol = 'tesoreria', activo = true, nombre = excluded.nombre;
 -- =====================================================================
