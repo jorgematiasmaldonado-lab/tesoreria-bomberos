@@ -85,7 +85,7 @@ Vistas.resumen = {
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
         ${tarjeta('Saldo en Caja', saldo.caja)}
         ${tarjeta('Saldo en Banco', saldo.banco)}
-        <div class="tarjeta bg-bombero text-white" style="background:#D32F2F"><div class="text-xs uppercase font-semibold opacity-90">Saldo total</div><div class="text-2xl font-bold">${esc(pesos(saldo.caja + saldo.banco))}</div></div>
+        <div class="tarjeta tarjeta-total text-white"><div class="text-xs uppercase font-semibold opacity-90">Saldo total</div><div class="text-2xl font-bold">${esc(pesos(saldo.caja + saldo.banco))}</div></div>
       </div>
       <div class="grid grid-cols-3 gap-3 mb-4">
         ${tarjeta('Ingresos del mes', ingresos, 'monto-ingreso')}
@@ -96,7 +96,7 @@ Vistas.resumen = {
       <div class="tarjeta mb-4">
         <h2 class="font-bold mb-3">Alertas</h2>
         ${alertas.length ? `<ul class="space-y-2">${alertas.map((a, i) => `
-          <li><button class="w-full text-left flex gap-3 items-start p-3 rounded-lg bg-bombero-claro hover:bg-red-100" style="background:#FFEBEE" data-alerta="${i}">
+          <li><button class="alerta-item w-full text-left flex gap-3 items-start p-3 rounded-lg" data-alerta="${i}">
             <span class="text-xl">${a.icono}</span><span class="flex-1">${esc(a.texto)}</span><span class="text-gray-400">›</span></button></li>`).join('')}</ul>`
           : '<p class="text-gray-500">✅ No hay alertas. Todo en orden.</p>'}
       </div>

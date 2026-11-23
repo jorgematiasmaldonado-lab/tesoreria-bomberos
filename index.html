@@ -10,6 +10,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="BV Icho Cruz">
+  <script>
+    // Aplica el tema (claro/oscuro) antes de dibujar la página, para evitar el parpadeo
+    (function () {
+      try {
+        var t = localStorage.getItem('bv-tema');
+        if (t === 'oscuro' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('oscuro');
+      } catch (e) { /* sin almacenamiento: queda en claro */ }
+    })();
+  </script>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -54,7 +63,8 @@
   </section>
 
   <!-- Pantalla de ingreso -->
-  <section id="pantalla-login" class="hidden no-print flex-1 flex items-center justify-center p-4">
+  <section id="pantalla-login" class="hidden no-print flex-1 flex items-center justify-center p-4 relative">
+    <button type="button" class="btn btn-secundario btn-icono absolute top-3 right-3" data-tema title="Cambiar a modo oscuro" aria-label="Cambiar tema">🌙</button>
     <div class="w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden">
       <div class="bg-bombero text-white text-center px-6 py-6">
         <img src="logo.png" alt="Logo del cuartel" class="w-24 h-24 mx-auto object-contain bg-white rounded-full p-1 mb-3" onerror="this.style.display='none'">
@@ -89,6 +99,7 @@
           <div class="font-bold leading-tight truncate">BV Villa Río Icho Cruz</div>
           <div class="text-xs opacity-90 truncate"><span id="usuario-nombre"></span> · <span id="usuario-rol"></span></div>
         </div>
+        <button id="btn-tema" class="btn-header" data-tema title="Cambiar a modo oscuro" aria-label="Cambiar tema">🌙</button>
         <button id="btn-cuenta" class="btn-header" title="Mi cuenta">🔑<span class="hidden sm:inline"> Contraseña</span></button>
         <button id="btn-salir" class="btn-header font-semibold">Salir</button>
       </div>

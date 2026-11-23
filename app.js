@@ -60,6 +60,7 @@ function mostrarPantalla(id) {
 }
 
 async function iniciar() {
+  conectarTema();
   registrarServiceWorker();
   vigilarConexion();
 
@@ -118,6 +119,34 @@ function conectarLogin() {
 }
 
 function urlApp() { return location.origin + location.pathname; }
+
+// ---------------------------------------------------------------------
+// Modo oscuro: la preferencia se guarda en este dispositivo
+// ---------------------------------------------------------------------
+function temaOscuro() { return document.documentElement.classList.contains('oscuro'); }
+function actualizarBotonesTema() {
+  const oscuro = temaOscuro();
+  document.querySelectorAll('[data-tema]').forEach((b) => {
+    b.textContent = oscuro ? '☀️' : '🌙';
+    b.title = oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+  });
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', oscuro ? '#B71C1C' : '#D32F2F');
+}
+function aplicarTema(oscuro, guardar = true) {
+  document.documentElement.classList.toggle('oscuro', oscuro);
+  if (guardar) { try { localStorage.setItem('bv-tema', oscuro ? 'oscuro' : 'claro'); } catch { /* sin almacenamiento */ } }
+  actualizarBotonesTema();
+}
+function conectarTema() {
+  document.querySelectorAll('[data-tema]').forEach((b) => b.addEventListener('click', () => aplicarTema(!temaOscuro())));
+  // Si el usuario nunca eligió, se sigue la preferencia del sistema (celular/PC)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', (ev) => {
+    let guardado = null;
+    try { guardado = localStorage.getItem('bv-tema'); } catch { /* nada */ }
+    if (!guardado) aplicarTema(ev.matches, false);
+  });
+  actualizarBotonesTema();
+}
 
 /** Carga el perfil del usuario y arma la aplicación según su rol */
 async function entrar(usuario) {

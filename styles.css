@@ -134,3 +134,80 @@ textarea.campo { min-height: 6rem; }
 .doc .rojo { color: #b71c1c; font-weight: bold; }
 .hoja { background: #fff; max-width: 210mm; margin: 0 auto; padding: 14mm 12mm; box-shadow: 0 2px 10px rgba(0,0,0,.12); }
 @media (max-width: 640px) { .hoja { padding: 6mm 4mm; } }
+
+/* Ítem de alerta del Resumen */
+.alerta-item { background: #FFEBEE; }
+.alerta-item:hover { background: #ffcdd2; }
+
+/* =====================================================================
+   MODO OSCURO (se activa con la clase "oscuro" en <html>)
+   Solo afecta la pantalla: los documentos impresos siempre salen en claro.
+   ===================================================================== */
+@media screen {
+  html.oscuro { color-scheme: dark; }
+  html.oscuro body { background: #0f1419 !important; color: #e5e7eb; }
+
+  /* Fondos */
+  html.oscuro .bg-white, html.oscuro .tarjeta, html.oscuro .modal-caja,
+  html.oscuro .subpestana:not(.activa), html.oscuro footer { background: #1a2129 !important; }
+  html.oscuro .bg-gray-100 { background: #0f1419 !important; }
+  html.oscuro .bg-gray-50, html.oscuro .modal-pie { background: #222b35 !important; }
+  html.oscuro .bg-red-50 { background: #3b1d1f !important; }
+  html.oscuro .bg-green-50 { background: #16301c !important; }
+  html.oscuro .bg-blue-50 { background: #172a40 !important; }
+  html.oscuro .alerta-item { background: #3a1e21; }
+  html.oscuro .alerta-item:hover { background: #4a2428; }
+  html.oscuro .tarjeta { box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+
+  /* Textos */
+  html.oscuro .text-gray-900, html.oscuro .text-gray-800 { color: #f3f4f6 !important; }
+  html.oscuro .text-gray-700, html.oscuro .text-gray-600 { color: #cbd5e1 !important; }
+  html.oscuro .text-gray-500, html.oscuro .text-gray-400 { color: #94a3b8 !important; }
+  html.oscuro .text-red-700, html.oscuro .text-red-800, html.oscuro .monto-egreso { color: #f87171 !important; }
+  html.oscuro .text-green-800, html.oscuro .monto-ingreso { color: #4ade80 !important; }
+  html.oscuro .text-amber-700 { color: #fbbf24 !important; }
+  html.oscuro .text-blue-900 { color: #bfdbfe !important; }
+  html.oscuro .etiqueta { color: #cbd5e1; }
+
+  /* Bordes */
+  html.oscuro *, html.oscuro ::before, html.oscuro ::after { border-color: #2d3742; }
+
+  /* Campos */
+  html.oscuro .campo { background: #0f1419; color: #f3f4f6; border-color: #3b4652; }
+  html.oscuro .campo::placeholder { color: #6b7280; }
+  html.oscuro .campo:disabled, html.oscuro .campo[readonly] { background: #1f2730; color: #9ca3af; }
+  html.oscuro .campo.error { background: #3b1d1f; border-color: #ef4444; }
+  html.oscuro .nivel-alerta { background: #4a1c1f !important; color: #fca5a5 !important; border-color: #ef5350 !important; }
+
+  /* Botones */
+  html.oscuro .btn-secundario { background: #222b35; color: #e5e7eb; border-color: #3b4652; }
+  html.oscuro .btn-secundario:hover:not(:disabled) { background: #2b3642; }
+  html.oscuro .btn-peligro { background: #222b35; color: #f87171; border-color: #7f1d1d; }
+  html.oscuro .btn-peligro:hover:not(:disabled) { background: #3b1d1f; }
+  html.oscuro .subpestana.activa { border-color: var(--rojo); }
+
+  /* Chips */
+  html.oscuro .chip-gris { background: #2d3742; color: #e5e7eb; }
+  html.oscuro .chip-verde { background: #14351d; color: #86efac; }
+  html.oscuro .chip-rojo { background: #451a1d; color: #fca5a5; }
+  html.oscuro .chip-amarillo { background: #3d300e; color: #fde68a; }
+  html.oscuro .chip-azul { background: #172a40; color: #93c5fd; }
+
+  /* Tablas, barras y miniaturas */
+  html.oscuro .tabla th { background: #222b35; color: #94a3b8; }
+  html.oscuro .tabla td { border-color: #26303a; }
+  html.oscuro .tabla tr:hover td { background: #212a34; }
+  html.oscuro .barra-fondo { background: #2d3742; }
+  html.oscuro .miniatura { background: #222b35; }
+  html.oscuro pre { color: #e5e7eb; }
+
+  /* Vista previa del informe (hoja) se mantiene clara, como el papel */
+  html.oscuro .hoja { background: #fff; color: #111; }
+  html.oscuro .hoja * { border-color: #bbb; }
+}
+
+/* Transición suave al cambiar de tema */
+body, .tarjeta, .campo, .btn { transition: background-color .2s, color .2s, border-color .2s; }
+.tarjeta-total { background: #D32F2F !important; }
+html.oscuro .tarjeta-total { background: #B71C1C !important; }
+html.oscuro .hoja .doc-encabezado, html.oscuro .hoja h2 { border-color: #D32F2F; }
